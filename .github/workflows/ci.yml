@@ -17,16 +17,35 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+
     - name: Get Version
       run: echo ::set-env name=VERSION::$(mvn -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec -q)
+
     - name: Build Image
       run: docker build -t allanweber/career-app:${VERSION} .
+
     - name: Docker Login
       run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
+
     - name: Push Version
       run: docker push allanweber/career-app:${VERSION}
+
     - name: Build Latest Image and Push (only master)
       if: github.ref == 'refs/heads/master'
       run: |
         docker tag allanweber/career-app:${VERSION} allanweber/career-app:latest
         docker push allanweber/career-app:latest
+
+  heroku-deploy:
+    name: Heroku Deploy
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref != 'refs/heads/master'
+    env:
+      HEROKU_API_KEY: ${{ secrets.HEROKU_SECRET }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Push to Heroku
+      run: git push --force https://heroku:$HEROKU_API_KEY@git.heroku.com/career-java-api-branch.git $GITHUB_SHA:master
