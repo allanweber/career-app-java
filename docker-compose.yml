@@ -1,0 +1,25 @@
+version: '3.1'
+
+services:
+  career-service:
+    build: .
+    # image: allanweber/career-app:latest
+    restart: always
+    container_name: career-service
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongo
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - MONGO_HOST=mongo
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:  # for demo/debug purpose only
+      - 27017:27017
+    volumes:
+      - $HOME/data/career-service-mongo-data:/data/db
+      - $HOME/data/career-service-mongo-bkp:/data/bkp
+    restart: always

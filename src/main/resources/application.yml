@@ -1,0 +1,10 @@
+management:
+  endpoints:
+    web:
+      base-path: /
+
+spring:
+  data:
+    mongodb:
+      database: career
+      uri: mongodb+srv://${MONGO_USER:user}:${MONGO_PASS:pass}@career-app-j5bbp.gcp.mongodb.net/career?retryWrites=true&w=majority&serverSelectionTimeoutMS=2000&connectTimeoutMS=2000
