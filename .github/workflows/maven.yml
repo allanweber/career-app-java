@@ -21,6 +21,12 @@ jobs:
       run: echo ::set-env name=VERSION::$(mvn -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec -q)
     - name: Build Image
       run: docker build -t allanweber/career-app:${VERSION} .
-    - name: Build Latest Image (only master)
+    - name: Docker Login
+      run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
+    - name: Push Version
+      run: docker push allanweber/career-app:${VERSION}
+    - name: Build Latest Image and Push (only master)
       if: github.ref == 'refs/heads/master'
-      run: docker tag allanweber/career-app:${VERSION} allanweber/career-app:latest
+      run: |
+        docker tag allanweber/career-app:${VERSION} allanweber/career-app:latest
+        docker push allanweber/career-app:latest
