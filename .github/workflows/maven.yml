@@ -1,17 +1,14 @@
-# This workflow will build a Java project with Maven
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
 name: Java CI with Maven
 
 on:
+  push:
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 1.8
@@ -20,3 +17,16 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Get Version
+      run: echo ::set-env name=VERSION::$(mvn -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec -q)
+    - name: Build Image
+      run: docker build -t allanweber/career-app:${VERSION} .
+    - name: Docker Login
+      run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
+    - name: Push Version
+      run: docker push allanweber/career-app:${VERSION}
+    - name: Build Latest Image and Push (only master)
+      if: github.ref == 'refs/heads/master'
+      run: |
+        docker tag allanweber/career-app:${VERSION} allanweber/career-app:latest
+        docker push allanweber/career-app:latest
