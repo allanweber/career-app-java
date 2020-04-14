@@ -1,3 +1,7 @@
+# Deploy
+
+Running PRD: https://career-java-api.herokuapp.com/
+
 # Valid Commands
 
 ## Artifact Version
