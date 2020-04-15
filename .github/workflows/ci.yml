@@ -52,4 +52,4 @@ jobs:
 
     - name: Push to Heroku Production
       if: github.ref == 'refs/heads/master'
-      run: git push --force https://heroku:$HEROKU_API_KEY@git.heroku.com/career-java-api.git master:master
+      run: git push --force https://heroku:$HEROKU_API_KEY@git.heroku.com/career-java-api.git master
