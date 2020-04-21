@@ -1,7 +1,6 @@
 package com.career.app.job.route;
 
 import com.career.app.job.dto.JobRequest;
-import com.career.app.job.dto.JobResponse;
 import com.career.app.job.entity.JobEntity;
 import com.career.app.job.service.JobService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ public class JobHandler {
     }
 
     public Mono<ServerResponse> get(ServerRequest request) {
-        return service.findById(id(request)).flatMap(job -> ok().contentType(APPLICATION_JSON).bodyValue(job));
+        return ok().contentType(APPLICATION_JSON).body(service.findById(id(request)), JobEntity.class);
     }
 
     public Mono<ServerResponse> post(ServerRequest request) {
@@ -48,8 +47,7 @@ public class JobHandler {
     }
 
     public Mono<ServerResponse> delete(ServerRequest request) {
-        return service.delete(id(request))
-                .then(noContent().build());
+        return noContent().build(service.delete(id(request)));
     }
 
     private String id(ServerRequest request) {
