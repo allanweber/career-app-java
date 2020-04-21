@@ -5,6 +5,7 @@ import com.career.app.job.entity.JobEntity;
 import com.career.app.job.service.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.TEXT_EVENT_STREAM;
 import static org.springframework.web.reactive.function.server.ServerResponse.noContent;
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
@@ -48,6 +50,10 @@ public class JobHandler {
 
     public Mono<ServerResponse> delete(ServerRequest request) {
         return noContent().build(service.delete(id(request)));
+    }
+
+    public Mono<ServerResponse> event(ServerRequest request) {
+        return ok().contentType(TEXT_EVENT_STREAM).body(BodyInserters.fromServerSentEvents(service.events(id(request))));
     }
 
     private String id(ServerRequest request) {

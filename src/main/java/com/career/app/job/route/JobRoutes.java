@@ -26,6 +26,7 @@ public class JobRoutes {
                 .andRoute(GET("/jobs/{jobId}").and(accept(APPLICATION_JSON)), jobHandler::get)
                 .andRoute(POST("/jobs").and(accept(APPLICATION_JSON)).and(contentType(APPLICATION_JSON)), jobHandler::post)
                 .andRoute(PUT("/jobs/{jobId}").and(accept(APPLICATION_JSON)).and(contentType(APPLICATION_JSON)), jobHandler::put)
-                .andRoute(DELETE("/jobs/{jobId}"), jobHandler::delete);
+                .andRoute(DELETE("/jobs/{jobId}"), jobHandler::delete)
+                .andRoute(GET("/jobs/{jobId}/events").and(accept(APPLICATION_JSON)), jobHandler::event);
     }
 }

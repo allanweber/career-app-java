@@ -6,6 +6,7 @@ import com.career.app.job.mapper.JobMapper;
 import com.career.app.job.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import reactor.core.publisher.Flux;
@@ -13,6 +14,8 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import java.time.Duration;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -55,5 +58,16 @@ public class JobService {
         return repository.findById(id)
                 .switchIfEmpty(Mono.error(new HttpClientErrorException(NOT_FOUND, JOB_NOT_FOUND)))
                 .flatMap(repository::delete);
+    }
+
+    public Flux<ServerSentEvent<JobResponse>> events(@NotBlank String id) {
+        return Flux.interval(Duration.ofSeconds(1))
+                .map(sequence ->
+                        ServerSentEvent.<JobResponse>builder()
+                                .id(String.valueOf(sequence))
+                                .event("periodic-event")
+                                .data(JobResponse.builder().id(id).name(id).build())
+                                .build()
+                );
     }
 }
